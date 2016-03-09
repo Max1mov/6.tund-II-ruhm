@@ -82,7 +82,7 @@
            //tekitan loendi htmli
            this.jars.forEach(function(jar){
 
-               var new_jar = new Jar(jar.title, jar.ingredients);
+               var new_jar = new Jar(jar.id, jar.title, jar.ingredients);
 
                var li = new_jar.createHtmlElement();
                document.querySelector('.list-of-jars').appendChild(li);
@@ -104,6 +104,25 @@
        document.querySelector('#search').addEventListener('keyup', this.search.bind(this));
 
      },
+     deleteJar: function(event){
+
+       //millele vajutasin SPAN
+       console.log(event.target);
+       //mille sees ta on LI
+       console.log(event.targer.parentNode);
+       //mille sees on UL
+       console.log(event.target.parentNode.parentNode);
+       //id
+       console.log(event.target.dataset.id);
+
+       var c = confirm("Oled kindel?");
+       //vajutas no.
+       if(!c){  return; }
+
+       console.log('kustutan');
+     },
+
+
 
      search: function(event){
          //otsikasti väärtus
@@ -143,7 +162,7 @@
 
        //console.log(title + ' ' + ingredients);
        //1) tekitan uue Jar'i
-       var new_jar = new Jar(title, ingredients);
+       var new_jar = new Jar(guid(), title, ingredients);
 
        //lisan massiiivi purgi
        this.jars.push(new_jar);
@@ -193,7 +212,8 @@
 
    }; // MOOSIPURGI LÕPP
 
-   var Jar = function(new_title, new_ingredients){
+   var Jar = function(new_id, new_title, new_ingredients){
+	 this.id = new_id;
      this.title = new_title;
      this.ingredients = new_ingredients;
      console.log('created new jar');
@@ -229,10 +249,40 @@
 
        li.appendChild(span_with_content);
 
+	   //DELETE nupp
+	   var span_delete = document.createElement('span');
+	   span_delete.style.color = "red";
+	   span_delete.style.cursor = "pointer";
+
+	   //kustutamiseks panen id kaasa
+	   span_delete.setAttribute("data-id", this.id);
+
+	   span_delete.innerHTML = " Delete";
+
+	   li.appendChild(span_delete);
+
+     //keegi vajutas nuppu
+     span_delete.addEventListner("click", Moosupurk.instance.deleteJar.bind(Moosipurk.instance));
+
+
        return li;
 
      }
    };
+
+   //HELPER
+   function guid(){
+		var d = new Date().getTime();
+		if(window.performance && typeof window.performance.now === "function"){
+			d += performance.now(); //use high-precision timer if available
+		}
+		var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+			var r = (d + Math.random()*16)%16 | 0;
+			d = Math.floor(d/16);
+			return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+		});
+		return uuid;
+	}
 
    // kui leht laetud käivitan Moosipurgi rakenduse
    window.onload = function(){
