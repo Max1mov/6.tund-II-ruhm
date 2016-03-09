@@ -89,7 +89,39 @@
 
            });
 
-       }
+       }else{
+
+		   //küsin AJAXIGA
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (xhttp.readyState == 4 && xhttp.status == 200) {
+
+					console.log(xhttp.responseText);
+					//tekst -> objekktideks
+					Moosipurk.instance.jars = JSON.parse(xhttp.responseText);
+					console.log(Moosipurk.instance.jars);
+
+					//teen purgid htmli
+					Moosipurk.instance.jars.forEach(function(jar){
+
+					   var new_jar = new Jar(jar.id, jar.title, jar.ingredients);
+
+					   var li = new_jar.createHtmlElement();
+					   document.querySelector('.list-of-jars').appendChild(li);
+
+				   });
+
+				   //salvestan localStoragisse
+				   localStorage.setItem('jars', JSON.stringify(Moosipurk.instance.jars));
+
+
+				}
+			};
+			xhttp.open("GET", "save.php", true);
+			xhttp.send();
+
+
+	   }
 
 
        // esimene loogika oleks see, et kuulame hiireklikki nupul
@@ -189,13 +221,34 @@
 
        //console.log(title + ' ' + ingredients);
        //1) tekitan uue Jar'i
-       var new_jar = new Jar(guid(), title, ingredients);
+	   var id = guid();
+       var new_jar = new Jar(id, title, ingredients);
 
        //lisan massiiivi purgi
        this.jars.push(new_jar);
        console.log(JSON.stringify(this.jars));
        // JSON'i stringina salvestan localStorage'isse
        localStorage.setItem('jars', JSON.stringify(this.jars));
+
+
+		//AJAX
+		var xhttp = new XMLHttpRequest();
+
+		//mis juhtub kui päring lõppeb
+		xhttp.onreadystatechange = function() {
+
+			console.log(xhttp.readyState);
+
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+
+				console.log(xhttp.responseText);
+			}
+		};
+
+		//teeb päringu
+		xhttp.open("GET", "save.php?id="+id+"&title="+title+"&ingredients="+ingredients, true);
+		xhttp.send();
+
 
        // 2) lisan selle htmli listi juurde
        var li = new_jar.createHtmlElement();
