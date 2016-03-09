@@ -104,26 +104,53 @@
        document.querySelector('#search').addEventListener('keyup', this.search.bind(this));
 
      },
-     deleteJar: function(event){
+	 deleteJar: function(event){
 
-       //millele vajutasin SPAN
-       console.log(event.target);
-       //mille sees ta on LI
-       console.log(event.targer.parentNode);
-       //mille sees on UL
-       console.log(event.target.parentNode.parentNode);
-       //id
-       console.log(event.target.dataset.id);
+		// millele vajutasin SPAN
+		console.log(event.target);
 
-       var c = confirm("Oled kindel?");
-       //vajutas no.
-       if(!c){  return; }
+		// tema parent ehk mille sees ta on LI
+		console.log(event.target.parentNode);
 
-       console.log('kustutan');
-     },
+		//mille sees see on UL
+		console.log(event.target.parentNode.parentNode);
+
+		//id
+		console.log(event.target.dataset.id);
+
+		var c = confirm("Oled kindel?");
+
+		// vajutas no, pani ristist kinni
+		if(!c){	return; }
+
+		//KUSTUTAN
+		console.log('kustutan');
+
+		// KUSTUTAN HTMLI
+		var ul = event.target.parentNode.parentNode;
+		var li = event.target.parentNode;
+
+		ul.removeChild(li);
+
+		//KUSTUTAN OBJEKTI ja uuenda localStoragit
+
+		var delete_id = event.target.dataset.id;
+
+		for(var i = 0; i < this.jars.length; i++){
+
+			if(this.jars[i].id == delete_id){
+				//see on see
+				//kustuta kohal i objekt ära
+				this.jars.splice(i, 1);
+				break;
+			}
+		}
+
+		localStorage.setItem('jars', JSON.stringify(this.jars));
 
 
 
+	 },
      search: function(event){
          //otsikasti väärtus
          var needle = document.querySelector('#search').value.toLowerCase();
@@ -261,9 +288,8 @@
 
 	   li.appendChild(span_delete);
 
-     //keegi vajutas nuppu
-     span_delete.addEventListner("click", Moosupurk.instance.deleteJar.bind(Moosipurk.instance));
-
+	   //keegi vajutas nuppu
+	   span_delete.addEventListener("click", Moosipurk.instance.deleteJar.bind(Moosipurk.instance));
 
        return li;
 
